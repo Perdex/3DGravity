@@ -5,9 +5,9 @@ import org.joml.Vector3f;
 
 public class GravSim {
     
-    private static final float G = 6.674e-6f;
+    private static final float G = 6.674e-11f;
     
-    private static final float timeScale = 1e5f;
+    private static final float timeScale = 1e4f;
 
     private final int n;
     
@@ -56,7 +56,7 @@ public class GravSim {
         
         float dsq = force.lengthSquared();
         
-        force.normalize().mul(G / dsq);
+        force.normalize().mul(dt * G / dsq);
         
         v[i].add(force.mul(mass[j], new Vector3f()));
         v[j].add(force.mul(-mass[i]));

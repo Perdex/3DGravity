@@ -1,6 +1,7 @@
 package meshes;
 
 import java.util.ArrayList;
+import lwjgltest.Texture;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -10,39 +11,48 @@ public class Mesh {
     private static final Vector3f uniformScale = new Vector3f(1e-5f);
     private static final float specificScale = 20f;
     
-    private final float[] vertices, texture;
-    private final int[] indeces;
+    private final float[] vertArray, texArray;
+    private final int[] indexArray;
+    
+    protected Texture texture;
     
     private Vector3f scale = new Vector3f(1, 1, 1), pos = new Vector3f();
     
     public Mesh(ArrayList<Float> vert, ArrayList<Float> text, ArrayList<Integer> ind){
         
-        vertices = new float[vert.size()];
-        texture = new float[text.size()];
-        indeces = new int[ind.size()];
+        vertArray = new float[vert.size()];
+        texArray = new float[text.size()];
+        indexArray = new int[ind.size()];
         
         //convert to native arrays
         for(int i = 0; i < vert.size(); i++)
-            vertices[i] = vert.get(i);
+            vertArray[i] = vert.get(i);
         for(int i = 0; i < text.size(); i++)
-            texture[i] = text.get(i);
+            texArray[i] = text.get(i);
         for(int i = 0; i < ind.size(); i++)
-            indeces[i] = ind.get(i);
+            indexArray[i] = ind.get(i);
     }
     public Mesh(float[] vert, float[] text, int[] ind){
-        vertices = vert;
-        texture = text;
-        indeces = ind;
+        vertArray = vert;
+        texArray = text;
+        indexArray = ind;
     }
     
-    public float[] getTexture(){
+    public float[] getTextArray(){
+        return texArray;
+    }
+    public float[] getVertArray(){
+        return vertArray;
+    }
+    public int[] getIndexArray(){
+        return indexArray;
+    }
+    
+    public Texture getTexture(){
         return texture;
     }
-    public float[] getVertices(){
-        return vertices;
-    }
-    public int[] getIndeces(){
-        return indeces;
+    public boolean isTextured(){
+        return texture != null;
     }
     
     public void setPos(Vector3f v){
@@ -65,7 +75,7 @@ public class Mesh {
         scale = s;
     }
     public Vector3f getDrawPos(){
-        return pos.mul(uniformScale, new Vector3f());
+        return pos.mul(uniformScale, new Vector3f()).mul(5);//WHY DOES IT NEED THIS 5?!?!?
     }
     public Vector3f getRawPos(){
         return pos.add(new Vector3f(), new Vector3f());
@@ -73,6 +83,7 @@ public class Mesh {
     public Vector3f getScale(){
         return scale;
     }
+    
     
     public Matrix4f getViewMatrix(){
         return new Matrix4f().scale(uniformScale).translate(pos).scale(scale).scale(specificScale);

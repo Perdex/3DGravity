@@ -3,20 +3,21 @@
 attribute vec3 vertices;
 attribute vec2 textures;
 
-varying float lightIntensity;
+//varying float lightIntensity;
 varying vec3 Position;
-varying vec3 Texture;
+varying vec2 Texture;
 
 
-uniform vec3 LightPosition;
+//uniform vec3 LightPosition;
 
 uniform mat4 projection;
 
 void main(){
 
     Position = vertices;
-    Texture = vec3(textures, 0);
+    Texture = textures;
 
+/*
     const float specularContribution = 0.2;
     const float diffuseContribution = (1.0 - specularContribution);
 
@@ -33,6 +34,7 @@ void main(){
 
     lightIntensity = abs(diffuseContribution * dot(lightVec, tnorm) +
     specularContribution * spec) + 0.1;
+*/
 
     gl_Position = projection * vec4(vertices, 1);
 }

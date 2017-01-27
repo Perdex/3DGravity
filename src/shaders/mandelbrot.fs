@@ -2,23 +2,20 @@
 
 varying vec3 pos;
 
-uniform float maxIterations;
 uniform float zoom;
-uniform float xCenter;
-uniform float yCenter;
-
 
 void main (void)
 {
-    float real = (pos.x * zoom) - xCenter;
-    float imag = (pos.y * zoom) - yCenter;
+
+    float real = pos.x * zoom;
+    float imag = pos.y * zoom;
     float Creal = real;
     float Cimag = imag;
 
     float r2 = 0.0;
     int iter;
 
-    for (iter = 0; iter < 200 + maxIterations && r2 < 4.0; ++iter) {
+    for (iter = 0; iter < 200 && r2 < 4.0; ++iter) {
         float tempreal = real;
 
         real = (tempreal * tempreal) - (imag * imag) + Creal;

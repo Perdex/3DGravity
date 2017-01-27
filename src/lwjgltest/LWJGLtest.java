@@ -19,7 +19,6 @@ public class LWJGLtest{
     
     private static long win;
     
-    private static Texture tex;
     static Camera camera;
      
     private static Model m[];
@@ -47,6 +46,7 @@ public class LWJGLtest{
             }
             frames++;
             
+            
             updateDisplay();
         }
         closeDisplay();
@@ -58,6 +58,9 @@ public class LWJGLtest{
     
     public static void updateDisplay(){
         
+        //keep base under m[0]
+        m[2].getMesh().setPos(m[0].getMesh().getRawPos().add(new Vector3f(0, 0, -1e9f), new Vector3f()));
+        
         sim.run(1f/60f);
         
         glClear(GL_COLOR_BUFFER_BIT);//init screen to bg color
@@ -65,15 +68,12 @@ public class LWJGLtest{
         shader.bind();
         
         
-        shader.setUniform("LightPosition", 0, -10, 10);
+        //shader.setUniform("LightPosition", 0, -10, 10);
 
-
-        tex.bind(0);
-        
         Actions.applyEvents(win);
         
         for(Model m2: m)
-            m2.render();
+            m2.render(shader);
         
 
         glfwSwapBuffers(win);
@@ -123,14 +123,16 @@ public class LWJGLtest{
 //        glEnable(GL_CULL_FACE);
         glDisable(GL_DITHER);
         
+        //BG color
         glClearColor(0, 0, 0.15f, 1);
         
         
         m = new Model[3];
         
+        Texture t = new Texture("img/Earth.jpg");
         
-        m[0] = Model.createFromMesh(meshes.Ball.makeBall(6.371e6f, new Vector3f(0, 0, 0), 50));
-        m[1] = Model.createFromMesh(meshes.Ball.makeBall(1.737e6f, new Vector3f(3.844e8f, 0, 0), 50));
+        m[0] = Model.createFromMesh(meshes.Ball.makeBall(6.371e6f, new Vector3f(0, 0, 0), 50, t));
+        m[1] = Model.createFromMesh(meshes.Ball.makeBall(1.737e6f, new Vector3f(3.844e8f, 0, 0), 10, null));
         
         m[2] = Model.createFromMesh(meshes.Fxy.asdf2());
         m[2].getMesh().scale(1e7f);
@@ -150,14 +152,19 @@ public class LWJGLtest{
             7.35e22f
         };
         
-        Camera.targetMesh = meshes[0];
-        
         sim = new GravSim(meshes, velocities, masses);
         
         
         shader = new Shader("shader");
-        tex = new Texture("img.png");
+        
+        //for mandelbrot :o
+        //shader.setUniform("zoom", 0.1f);
+        
         camera = new Camera(WIDTH, HEIGHT);
+    }
+    
+    public static Mesh getMesh(int i){
+        return m[i % m.length].getMesh();
     }
     
     

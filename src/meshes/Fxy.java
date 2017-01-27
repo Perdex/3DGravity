@@ -14,7 +14,7 @@ public class Fxy {
     
     public static Mesh asdf2(){
         return build((float x, float y) -> 
-                Math.cos((x*x + y*y)/10) / (0.25 + (x*x + y*y) / 30)// + y*y / 30 + x*x / 30
+                -Math.cos((x*x + y*y)/10) / (0.25 + (x*x + y*y) / 30)// + y*y / 30 + x*x / 30
         );
     }
 

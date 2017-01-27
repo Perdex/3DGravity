@@ -3,12 +3,19 @@
 uniform sampler2D sampler;
 
 varying vec3 Position;
-varying vec3 Texture;
-varying float lightIntensity;
+varying vec2 Texture;
+//varying float lightIntensity;
 
+uniform int shaded;
 
 
 void main(){
+	
+	if(shaded == 1){
+		gl_FragColor = texture2D(sampler, Texture);
+		return;
+	}
+	
     float pscale = 20.0;
     float r = clamp(Position.x / pscale + 0.5, 0.1, 1);
     float g = clamp(Position.y / pscale + 0.5, 0.1, 1);
@@ -17,7 +24,7 @@ void main(){
 
     float wireframeScale = 0.02;
 
-    float k = min(0.2 * (Position.z + 2), 1);
+    float k = clamp(1 / (1-Position.z/2), 0.1, 1);
 
     if(Texture.x < wireframeScale)
         k *= Texture.x / wireframeScale;
@@ -29,15 +36,15 @@ void main(){
     if(Texture.y > 1 - wireframeScale)
         k *= (1 - Texture.y) / wireframeScale;
 
-    //if(abs(Texture.x - Texture.y) < wireframeScale)
-    //    k *= (abs(Texture.x - Texture.y)) / wireframeScale;
+    if(abs(Texture.x - Texture.y - 0.25) < wireframeScale)
+        k *= 0.25;
     
 
     r *= k;
     g *= k;
     b *= k;
 
-    if(Texture.x < 0 || Texture.y < 0){
+    if(Texture.x > 1 || Texture.y > 1){
         r = 1;
         g = 1;
         b = 1;
@@ -49,5 +56,5 @@ void main(){
 */
 
 
-    gl_FragColor = vec4(r, g, b, 1);//texture2D(sampler, Texture);
+    gl_FragColor = vec4(r, g, b, 1);
 }

@@ -57,6 +57,9 @@ public class Actions{
         glfwSetMouseButtonCallback(win, (window, button, action, mods) -> {
             if(button == GLFW_MOUSE_BUTTON_1)
                 rot = !rot;
+            if(button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS){
+                Camera.targetMesh++;
+            }
         });
         
         glfwSetScrollCallback(win, (window, dx, dy) -> {
@@ -86,6 +89,7 @@ public class Actions{
         glfwSetKeyCallback(win, (window, key, scancode, action, mods) -> {
                 if(action == GLFW_RELEASE && key == GLFW_KEY_ESCAPE)
                     glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+                
                 
         });
     }

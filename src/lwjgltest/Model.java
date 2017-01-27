@@ -41,7 +41,7 @@ public class Model {
     }
     
     public static Model createFromMesh(meshes.Mesh m){
-        Model mod = new Model(m.getVertices(), m.getTexture(), m.getIndeces());
+        Model mod = new Model(m.getVertArray(), m.getTextArray(), m.getIndexArray());
         mod.mesh = m;
         return mod;
     }
@@ -50,12 +50,19 @@ public class Model {
         return mesh;
     }
 
-    public void render(){
+    public void render(Shader s){
         
         Matrix4f proj = LWJGLtest.camera.getProjection();
         
-        if(mesh != null)
+        if(mesh != null){
             proj = proj.mul(mesh.getViewMatrix());
+            if(mesh.isTextured()){
+                mesh.getTexture().bind(0);
+                s.setUniform("shaded", 1);
+            }else
+                s.setUniform("shaded", 0);
+                
+        }
         
         LWJGLtest.shader.setUniform("projection", proj);
         

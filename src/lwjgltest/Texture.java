@@ -14,7 +14,7 @@ import static org.lwjgl.opengl.GL13.*;
 
 public class Texture {
     
-    private int id, width, height;
+    private int id, width = 1, height = 1;
     
     public Texture(String filename){
         BufferedImage bi;
@@ -24,13 +24,14 @@ public class Texture {
             width = bi.getWidth();
             height = bi.getHeight();
             
+            
             int[] pixels_raw = bi.getRGB(0, 0, width, height, null, 0, width);
             
             ByteBuffer pixels = BufferUtils.createByteBuffer(width * height * 4);
             
             for(int i = 0; i < width; i++){
                 for(int j = 0; j < height; j++){
-                    int pixel = pixels_raw[i * width + j];
+                    int pixel = pixels_raw[i * height + j];
 //                    pixels.put((byte)(0xFF));   //RED
 //                    pixels.put((byte)(i % 0xFF));   //GREEN
 //                    pixels.put((byte)(j % 0xFF));   //BLUE
@@ -63,6 +64,13 @@ public class Texture {
             glActiveTexture(GL_TEXTURE0 + sampler);
             glBindTexture(GL_TEXTURE_2D, id);
         }
+    }
+    
+    public int getWidth(){
+        return width;
+    }
+    public int getHeight(){
+        return height;
     }
     
 }

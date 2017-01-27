@@ -14,7 +14,7 @@ public class Camera {
     private static Matrix4f proj, scale;
     private static Quaternionf rot;
     
-    static Mesh targetMesh;
+    static int targetMesh;
     
     public Camera(int width, int height){
         int dist = 10000;
@@ -86,7 +86,10 @@ public class Camera {
         return rot.positiveZ(new Vector3f());
     }
     public Vector3f getPosition(){
-        return pos.add(targetMesh.getDrawPos(), new Vector3f());
+        //return pos.add(new Vector3f(), new Vector3f());
+        //System.out.println(pos + " + " + targetMesh.getDrawPos() + " = " + pos.add(targetMesh.getDrawPos(), new Vector3f()));
+        
+        return pos.add(LWJGLtest.getMesh(targetMesh).getDrawPos(), new Vector3f());
     }
     
     public Matrix4f getProjection(){
