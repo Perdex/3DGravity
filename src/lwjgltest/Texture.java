@@ -14,13 +14,13 @@ import static org.lwjgl.opengl.GL13.*;
 
 public class Texture {
     
-    private int id, width = 1, height = 1;
+    private int id, width = 1, height = 1, sampler;
     
     public Texture(String filename){
         BufferedImage bi;
         
         try{
-            bi = ImageIO.read(new File("src/" + filename));
+            bi = ImageIO.read(new File("src/img/" + filename));
             width = bi.getWidth();
             height = bi.getHeight();
             
@@ -32,10 +32,6 @@ public class Texture {
             for(int i = 0; i < width; i++){
                 for(int j = 0; j < height; j++){
                     int pixel = pixels_raw[i * height + j];
-//                    pixels.put((byte)(0xFF));   //RED
-//                    pixels.put((byte)(i % 0xFF));   //GREEN
-//                    pixels.put((byte)(j % 0xFF));   //BLUE
-//                    pixels.put((byte)(0xFF));   //ALPHA
                     pixels.put((byte)((pixel >> 16) & 0xFF));   //RED
                     pixels.put((byte)((pixel >> 8) & 0xFF));    //GREEN
                     pixels.put((byte)(pixel & 0xFF));           //BLUE
@@ -60,7 +56,11 @@ public class Texture {
     }
     
     public void bind(int sampler){
-        if(sampler >= 0 && sampler <= 31){
+        this.sampler = 0;
+        bind();
+    }
+    public void bind(){
+        if(sampler >= 0 && sampler < 31){
             glActiveTexture(GL_TEXTURE0 + sampler);
             glBindTexture(GL_TEXTURE_2D, id);
         }

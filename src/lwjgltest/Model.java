@@ -3,6 +3,7 @@ package lwjgltest;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL11.*;
@@ -40,9 +41,12 @@ public class Model {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
     
-    public static Model createFromMesh(meshes.Mesh m){
+    public static Model createFromMesh(meshes.Mesh m, int i){
         Model mod = new Model(m.getVertArray(), m.getTextArray(), m.getIndexArray());
         mod.mesh = m;
+        if(m.isTextured()){
+            m.getTexture().bind(i);
+        }
         return mod;
     }
     
@@ -50,18 +54,23 @@ public class Model {
         return mesh;
     }
 
-    public void render(Shader s){
+    public void render(Shader s, int i){
         
         Matrix4f proj = LWJGLtest.camera.getProjection();
         
         if(mesh != null){
             proj = proj.mul(mesh.getViewMatrix());
             if(mesh.isTextured()){
-                mesh.getTexture().bind(0);
-                s.setUniform("shaded", 1);
+                mesh.getTexture().bind();
+                s.setUniform("shaderMode", 1);
             }else
-                s.setUniform("shaded", 0);
+                s.setUniform("shaderMode", 0);
+            
+            if(i == 0)
+                s.setUniform("shaderMode", 2);
                 
+            Vector3f pos = mesh.getDrawPos();
+            s.setUniform("LightPosition", -pos.x, -pos.y, -pos.z);
         }
         
         LWJGLtest.shader.setUniform("projection", proj);

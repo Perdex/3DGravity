@@ -4,15 +4,23 @@ uniform sampler2D sampler;
 
 varying vec3 Position;
 varying vec2 Texture;
-//varying float lightIntensity;
+varying float lightIntensity;
 
-uniform int shaded;
+uniform int shaderMode;
 
 
 void main(){
 	
-	if(shaded == 1){
-		gl_FragColor = texture2D(sampler, Texture);
+	if(shaderMode == 1){
+		gl_FragColor = lightIntensity * texture2D(sampler, Texture);
+		return;
+	}
+	if(shaderMode == 2){
+		gl_FragColor = min(1.5 * texture2D(sampler, Texture), 1);
+		return;
+	}
+	if(shaderMode == 3){
+		gl_FragColor = vec4(0, 0.5, 0, 0.2);
 		return;
 	}
 	
@@ -49,11 +57,11 @@ void main(){
         g = 1;
         b = 1;
     }
-/*
+
     r = clamp(r * lightIntensity, 0.0, 1.0);
     g = clamp(g * lightIntensity, 0.0, 1.0);
     b = clamp(b * lightIntensity, 0.0, 1.0);
-*/
+
 
 
     gl_FragColor = vec4(r, g, b, 1);

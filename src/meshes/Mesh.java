@@ -8,8 +8,8 @@ import org.joml.Vector3f;
 
 
 public class Mesh {
-    private static final Vector3f uniformScale = new Vector3f(1e-5f);
-    private static final float specificScale = 20f;
+    private static final Vector3f uniformScale = new Vector3f(lwjgltest.LWJGLtest.uniformScalingFactor);
+    private static final float specificScale = 10f;
     
     private final float[] vertArray, texArray;
     private final int[] indexArray;
@@ -56,7 +56,7 @@ public class Mesh {
     }
     
     public void setPos(Vector3f v){
-        pos = v.add(new Vector3f(), new Vector3f());
+        pos = v;
     }
     public void translate(Vector3f v){
         pos.add(v);

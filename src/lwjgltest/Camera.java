@@ -1,6 +1,5 @@
 package lwjgltest;
 
-import meshes.Mesh;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -8,19 +7,20 @@ import org.joml.Vector3f;
 public class Camera {
 
     private static final boolean freecamera = false;
-    private static final float movementSpeed = 200f;
+    private static final float movementSpeed = 1f;
     
     private static Vector3f pos;
-    private static Matrix4f proj, scale;
+    private static Matrix4f proj, proj2D, scale;
     private static Quaternionf rot;
     
-    static int targetMesh;
+    static int targetMesh = 1;
     
     public Camera(int width, int height){
-        int dist = 10000;
+        int dist = 10;
         pos = new Vector3f(-dist, -dist, dist);
         
-        proj = new Matrix4f().setPerspective((float)Math.PI/2f, 16f/9f, 0.1f, Float.POSITIVE_INFINITY);
+        proj = new Matrix4f().setPerspective((float)Math.PI/2.5f, 16f/9f, 0.1f, Float.POSITIVE_INFINITY);
+        proj2D = new Matrix4f().setOrtho2D(-0.5f, 0.5f, -0.5f, 0.5f);
         
         rot = new Quaternionf(0, 0, 0, 1).rotateX(-1).rotateZ(0.8f);
         
@@ -30,7 +30,7 @@ public class Camera {
     
     
     public void translateFree(float amount, int axis){
-        amount *= movementSpeed;
+        amount *= -movementSpeed;
         switch(axis){
             case 0:
                 pos.add(rot.positiveX(new Vector3f()).mul(amount));
@@ -99,6 +99,9 @@ public class Camera {
         target = proj.rotate(rot, target);
         target = target.mul(pos2, target);
         return target.mul(scale);
+    }
+    public Matrix4f get2DProjection(){
+        return proj2D;
     }
     
 }

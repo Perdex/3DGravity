@@ -18,14 +18,15 @@ public class Actions{
         for(int i = 0; i < 6; i++){
             //go through translating keys
             if(glfwGetKey(win, transKeys[i]) == GLFW_PRESS)
-                LWJGLtest.camera.translate((2*(i%2)-1), i / 2);
+                LWJGLtest.camera.translate(2*(i%2)-1, i / 2);
             
             //go through rotating keys
             if(glfwGetKey(win, rotKeys[i]) == GLFW_PRESS)
                 LWJGLtest.camera.rotate((2*(i%2)-1) * 0.05f, i / 2);
             
         }
-        
+        if(glfwGetKey(win, GLFW_KEY_SPACE) == GLFW_PRESS)
+            LWJGLtest.camera.translateFree(1f, 2);
 //        shader.setUniform("zoom", zoom);
 //        shader.setUniform("xCenter", x);
 //        shader.setUniform("yCenter", y);
@@ -63,7 +64,7 @@ public class Actions{
         });
         
         glfwSetScrollCallback(win, (window, dx, dy) -> {
-            LWJGLtest.camera.translateFree((float)dy * -2f, 2);
+            LWJGLtest.camera.translateFree((float)dy * 2f, 2);
         });
 //            
 //            double dz = Math.pow(1.2, dy / 3);

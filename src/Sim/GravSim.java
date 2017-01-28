@@ -1,13 +1,14 @@
 package Sim;
 
 import meshes.Mesh;
+import lwjgltest.Model;
 import org.joml.Vector3f;
 
-public class GravSim {
+public class GravSim implements Runnable{
     
     private static final float G = 6.674e-11f;
     
-    private static final float timeScale = 1e4f;
+    private static final float timeStep = 10f;
 
     private final int n;
     
@@ -16,24 +17,53 @@ public class GravSim {
     
     private final float[] mass;
     
-    public GravSim(Mesh[] meshes, Vector3f[] v, float[] mass){
+    private final Model[] models;
+    
+    private boolean execute = true;
+    
+    public GravSim(){
         
-        n = meshes.length;
+        Planet[] planets = Planet.makePlanets();
         
+        n = planets.length;
+        
+        meshes = new Mesh[n];
+        mass = new float[n];
         pos = new Vector3f[n];
+        v = new Vector3f[n];
+        models = new Model[n];
         
-        for(int i = 0; i < n; i++)
-            pos[i] = meshes[i].getRawPos();
+        for(int i = 0; i < n; i++){
+            Planet p = planets[i];
+            meshes[i] = p.getMesh();
+            mass[i] = p.mass;
+            pos[i] = p.pos;
+            v[i] = p.v;
+            models[i] = p.makeModel(i);
+        }
         
-        this.meshes = meshes;
-        this.mass = mass;
-        this.v = v;
+        
     }
     
-    
-    public void run(float dt){
+    public Model[] getModels(){
+        return models;
+    }
+   
+    @Override
+    public void run(){
         
-        dt *= timeScale;
+        while(execute){
+            runStep(timeStep);
+            try{
+                Thread.sleep(1);
+            }catch(InterruptedException e){
+                System.err.println(e);
+            }
+        }
+        
+    }
+    
+    private void runStep(float dt){
         
         for(int i = 0; i < n; i++)
             for(int j = i+1; j < n; j++)
@@ -61,6 +91,10 @@ public class GravSim {
         v[i].add(force.mul(mass[j], new Vector3f()));
         v[j].add(force.mul(-mass[i]));
         
+    }
+    
+    public void stop(){
+        execute = false;
     }
     
 }

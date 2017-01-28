@@ -14,16 +14,17 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 
 public class LWJGLtest{
 
+    public static final float uniformScalingFactor = 1e-8f;
     static final int WIDTH = 1600, HEIGHT = 900;
     
     
     private static long win;
     
-    static Camera camera;
-     
-    private static Model m[];
+    private static Model m[], m0;
     
+    static Camera camera;
     static Shader shader;
+    //private static UI2D ui;
     
     private static GravSim sim;
     
@@ -58,24 +59,30 @@ public class LWJGLtest{
     
     public static void updateDisplay(){
         
-        //keep base under m[0]
-        m[2].getMesh().setPos(m[0].getMesh().getRawPos().add(new Vector3f(0, 0, -1e9f), new Vector3f()));
         
-        sim.run(1f/60f);
+        
+        //keep base under m[0]
+        //m0.getMesh().setPos(m[1].getMesh().getRawPos().add(new Vector3f(0, 0, -1e9f), new Vector3f()));
+        
         
         glClear(GL_COLOR_BUFFER_BIT);//init screen to bg color
         
         shader.bind();
         
-        
-        //shader.setUniform("LightPosition", 0, -10, 10);
-
         Actions.applyEvents(win);
         
-        for(Model m2: m)
-            m2.render(shader);
+        //m0.render(shader);
         
+        
+        for(int i = 0; i < m.length; i++)
+            m[i].render(shader, i);
+        
+        //glDisable(GL_DEPTH_TEST);
 
+        //ui.render(shader);
+        
+        //glEnable(GL_DEPTH_TEST);
+        
         glfwSwapBuffers(win);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
         
@@ -85,10 +92,7 @@ public class LWJGLtest{
         glfwPollEvents();
         
     }
-    
-    
-    
-    public static void init(){
+    private static void init(){
         
         //set error stream
 	GLFWErrorCallback.createPrint(System.err).set();
@@ -114,7 +118,7 @@ public class LWJGLtest{
         //init GL environment
         GL.createCapabilities();
         
-        //glEnable(GL_TEXTURE_2D);
+        glEnable(GL_TEXTURE_2D);
         
         glEnable(GL_DEPTH_TEST);
         glDepthMask(true);
@@ -124,43 +128,26 @@ public class LWJGLtest{
         glDisable(GL_DITHER);
         
         //BG color
-        glClearColor(0, 0, 0.15f, 1);
+        glClearColor(0, 0, 0, 1);
         
         
-        m = new Model[3];
-        
-        Texture t = new Texture("img/Earth.jpg");
-        
-        m[0] = Model.createFromMesh(meshes.Ball.makeBall(6.371e6f, new Vector3f(0, 0, 0), 50, t));
-        m[1] = Model.createFromMesh(meshes.Ball.makeBall(1.737e6f, new Vector3f(3.844e8f, 0, 0), 10, null));
-        
-        m[2] = Model.createFromMesh(meshes.Fxy.asdf2());
-        m[2].getMesh().scale(1e7f);
-        m[2].getMesh().translate(new Vector3f(0, 0, -1e9f));
+        m0 = Model.createFromMesh(meshes.Fxy.asdf2(), 0);
+        m0.getMesh().scale(1e7f);
+        m0.getMesh().translate(new Vector3f(0, 0, -1e9f));
         
         
-        Mesh[] meshes = new Mesh[]{
-            m[0].getMesh(),
-            m[1].getMesh()
-        };
-        Vector3f[] velocities = new Vector3f[]{
-            new Vector3f(0, 0, 0),
-            new Vector3f(0, 7.5e3f, 0)
-        };
-        float[] masses = new float[]{
-            5.97e24f,
-            7.35e22f
-        };
-        
-        sim = new GravSim(meshes, velocities, masses);
-        
+        sim = new GravSim();
+        m = sim.getModels();
         
         shader = new Shader("shader");
         
-        //for mandelbrot :o
-        //shader.setUniform("zoom", 0.1f);
-        
         camera = new Camera(WIDTH, HEIGHT);
+        
+        //ui = new UI2D();
+        
+        
+        
+        new Thread(sim).start();
     }
     
     public static Mesh getMesh(int i){
@@ -169,11 +156,10 @@ public class LWJGLtest{
     
     
     
-    public static float sq(float f){
-        return f*f;
-    }
-    
-    public static void closeDisplay(){
+    private static void closeDisplay(){
+        
+        sim.stop();
+        
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(win);
         glfwDestroyWindow(win);

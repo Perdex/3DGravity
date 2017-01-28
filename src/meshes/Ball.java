@@ -15,11 +15,11 @@ public class Ball extends Mesh{
     }
     
     
-    public static Ball makeBall(float r, Vector3f pos, int precision, Texture texture){
+    public static Ball makeBall(float r, Vector3f pos, int precision, String texture){
         return makeEllipsoid(new Vector3f(r), pos, precision, texture);
     }
         
-    public static Ball makeEllipsoid(Vector3f scale, Vector3f pos, int precision, Texture texture){
+    public static Ball makeEllipsoid(Vector3f scale, Vector3f pos, int precision, String texture){
         
         boolean textured = texture != null;
         
@@ -109,7 +109,7 @@ public class Ball extends Mesh{
         
         Ball b = new Ball(vert, text, ind);
         if(textured)
-            b.texture = texture;
+            b.texture = new Texture(texture);
         b.scale(scale);
         b.setPos(pos);
         return b;
